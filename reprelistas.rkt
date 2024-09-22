@@ -22,8 +22,8 @@
   (fourth circuit))
 
 ;;este ejemplo me lo dio chat para ponerlo en los test jiji
-(define lista-circuito-simple
+#|(define lista-circuito-simple
   (make-simple-circuit '(a b) '(c) '(chip-prim 'and)))
 
 (display lista-circuito-simple)
-(newline)
+(newline)|#
