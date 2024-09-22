@@ -46,4 +46,5 @@
 
 (display circuito-ejemplo)
 (newline)
+
 (display lista-resultado)
