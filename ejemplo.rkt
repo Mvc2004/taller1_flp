@@ -27,3 +27,26 @@
       '(w)
    )
 )
+
+; EJEMPLO 2
+
+(chip-com
+    '(INA INB INC IND INE INF ING INH)
+    '(OUTA OUTC OUTE OUTG)
+     (complex-circuit
+        (simple-circuit '(a b) '(i) (chip-prim (chip-and)))
+        (list
+            (simple-circuit '(c d) '(j) (chip-prim (chip-or)))
+            simple-circuit '(e f) '(k) (chip-prim (chip-and))
+            simple-circuit '(g h) '(l) (chip-prim (chip-or))
+        )
+       '(a b c d e f g h)
+       '(i j k l))
+)
+; EJEMPLO 3
+
+()
+
+; EJEMPLO 4
+; EJEMPLO 5
+; EJEMPLO 6
