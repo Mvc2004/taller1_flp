@@ -76,4 +76,11 @@
 )
     
 ; EJEMPLO 5
+(simple-circuit '(a b) '(c) (chip-prim(chip-and)))
+
 ; EJEMPLO 6
+
+(chip-comp
+    '(INA INB)
+    '(OUTA)
+     (simple-circuit '(a b) '(c) (chip-prim (chip-or))))
