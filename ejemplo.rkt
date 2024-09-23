@@ -34,14 +34,14 @@
     '(INA INB INC IND INE INF ING INH)
     '(OUTA OUTC OUTE OUTG)
      (complex-circuit
-        (simple-circuit '(a b) '(i) (chip-prim (chip-and)))
+        (simple-circuit '(a b) '(m) (chip-prim (chip-and)))
         (list
-            (simple-circuit '(c d) '(j) (chip-prim (chip-or)))
-            simple-circuit '(e f) '(k) (chip-prim (chip-and))
+            (simple-circuit '(c d) '(e) (chip-prim (chip-or)))
+            simple-circuit '(e f) '(r) (chip-prim (chip-and))
             simple-circuit '(g h) '(l) (chip-prim (chip-or))
         )
        '(a b c d e f g h)
-       '(i j k l))
+       '(m e r l))
 )
 ; EJEMPLO 3
 
@@ -56,5 +56,24 @@
 )
 
 ; EJEMPLO 4
+
+
+(simple-circuit 
+    '(s o f i)
+    '(e f)
+    (chip-comp
+        '(INA INB INC IND)
+        '(OUTA OUTC)
+         (complex-circuit
+            (simple-circuit '(a b) '(e) (chip-prim (chip-or)))
+            (list
+            (simple-circuit '(c d) '(f) (chip-prim (chip-or)))
+            )
+            '(a b c d)
+            '(e f)
+         )
+    )
+)
+    
 ; EJEMPLO 5
 ; EJEMPLO 6
