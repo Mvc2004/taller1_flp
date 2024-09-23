@@ -45,7 +45,15 @@
 )
 ; EJEMPLO 3
 
-()
+(simple-circuit 
+    '(z w) 
+    '(x) 
+    (chip-comp
+        '(INA INB)
+        '(OUTA)
+         (simple-circuit '(a b) '(c) (chip-prim (chip-and)))
+    )
+)
 
 ; EJEMPLO 4
 ; EJEMPLO 5
