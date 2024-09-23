@@ -152,7 +152,7 @@
 
 
 ;EJEMPLOS
-  
+
 ;1
 (define a (simple-circuit '(a b) '(c) '(prim-chip(chip-nand))))
 
@@ -183,5 +183,3 @@
 ;5.
 (define e
   (comp-chip '(INA INB) '(OUTA) '(simple-circuit '(a b) '(c) '(prim-chip()chip-xor))))
-
-

@@ -189,10 +189,9 @@
   '(OUTA) 
    (complex-circuit 
       (complex-circuit
-        (simple-circuit '(a b) '(e) '(prim-chip(chip-nand)))
+        (simple-circuit '(a b) '(e) (prim-chip chip-and))
         (list 
-          (simple-circuit '(c d) '(f) '(prim-chip (chip-xor)))
-        )
+          (simple-circuit '(c d) '(f) (prim-chip chip-xor)))
         '(a b c d)
         '(e f)
       )
@@ -203,10 +202,10 @@
            (comp-chip
              '(INE INF)
              '(OUTF)
-              (simple-circuit '(e f) '(g) '(prim-chip (chip-and)))
+              (simple-circuit '(e f) '(g) (prim-chip chip-and)))
            )
         ) 
-      )
+      
       '(a b c d)
       '(w)
    )
@@ -214,9 +213,9 @@
 
 ;2.
 (define b
-  (complex-circuit (simple-circuit '(a b) '(e) '(prim-chip(chip-and)))
+  (complex-circuit (simple-circuit '(a b) '(e) (prim-chip chip-and))
                    (list
-                     (simple-circuit '(c d) '(f) '(prim-chip(chip-and))))
+                     (simple-circuit '(c d) '(f) (prim-chip chip-and)))
                    '(a b c d)
                    '(e f)
 ))
@@ -226,23 +225,21 @@
     '(INA INB INC IND INE INF ING INH)
     '(OUTA OUTC OUTE OUTG)
      (complex-circuit
-        (simple-circuit '(a b) '(m) '(prim-chip (chip-and)))
+        (simple-circuit '(a b) '(m) (prim-chip chip-and))
         (list
-            (simple-circuit '(c d) '(e) '(prim-chip (chip-or)))
-            simple-circuit '(e f) '(r) '(prim-chip (chip-xnor))
-            simple-circuit '(g h) '(l) '(prim-chip (chip-nor))
-        )
+            (simple-circuit '(c d) '(e) (prim-chip chip-or))
+            (simple-circuit '(e f) '(r) (prim-chip chip-and))
+            (simple-circuit '(g h) '(l) (prim-chip chip-nor)))
        '(a b c d e f g h)
        '(m e r l))
 ))
 ;4.
-(define d (simple-circuit '(a) '(b) '(prim-chip (chip-not))))
+(define d (simple-circuit '(a) '(b) (prim-chip chip-not)))
 
 
 ;5.
 (define e
-  (complex-circuit '(simple-circuit '(a b) '(c) '(prim-chip (chip-and)))
-                   (list (simple-circuit '(c) '(d) '(prim-chip (chip-not))))
+  (complex-circuit (simple-circuit '(a b) '(c) (prim-chip chip-and))
+                   (list (simple-circuit '(c) '(d) (prim-chip chip-not)))
                    '(a b)
                    '(d)))
-
