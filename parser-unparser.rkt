@@ -1,53 +1,143 @@
-#lang racket
+#lang eopl
 
-;; Importar los módulos con los TADs y las listas
-(require "repredatatype.rkt")
-(require "reprelistas.rkt")
+;; Definición de tipos abstractos de datos (TAD)
 
-;; Parser: Convierte una lista en un datatype de circuito
-(define (parse-circuit lista)
-  (match (first lista)
-    ['simple-circuit
-     (simple-circuit (second lista) (third lista) (parse-chip (fourth lista)))]
-    ['complex-circuit
-     (complex-circuit (map parse-circuit (second lista)))]))
+(define-datatype circuito circuito?
+  (simple-circuit (in list?)
+                  (out list?)
+                  (chip chip?))
+  (complex-circuit (circ circuito?)
+                   (lcirc list?)
+                   (in list?)
+                   (out list?)))
 
-(define (parse-chip chip-list)
-  (match (first chip-list)
-    ['chip-prim (chip-prim (second chip-list))]
-    ['chip-comp (chip-comp (second chip-list) (third chip-list) 
-                           (map parse-circuit (fourth chip-list)))]))
+(define-datatype chip chip?
+  (prim-chip (chip-prim chip-prim?))
+  (comp-chip (in list?)
+             (out list?)
+             (circ circuito?)))
 
-;; Unparser: Convierte un datatype de circuito en listas
-(define (unparse-circuit circuit)
-  (cases circuito circuit
-    [(simple-circuit inputs outputs chip)
-     `(simple-circuit ,inputs ,outputs ,(unparse-chip chip))]
-    [(complex-circuit circuits)
-     `(complex-circuit ,(map unparse-circuit circuits))]))
+(define-datatype chip-prim chip-prim?
+  (chip-or)
+  (chip-and)
+  (chip-not)
+  (chip-xor)
+  (chip-nor)
+  (chip-nand)
+  (chip-xnor))
 
-(define (unparse-chip chip)
-  (cases chip chip
-    [(chip-prim type) `(chip-prim ,type)]
-    [(chip-comp inputs outputs circuits)
-     `(chip-comp ,inputs ,outputs ,(map unparse-circuit circuits))]))
 
-;; Ejemplosssssss
+;; Sintaxis concreta de circuitos
+(define e '(simple-circuit (a b) (c) (prim-chip (chip-or))))  ;; Ejemplo simple
 
-;; Crear una lista de circuito
-(define lista-ejemplo
-  (make-simple-circuit '(a b) '(c) '(chip-prim 'and)))
+(define x '(comp-chip (INA INB INC IND)
+              (OUTA)
+             (complex-circuit
+               (complex-circuit
+                (simple-circuit (a b) (e) (prim-chip (chip-or)))
+                (list 
+                  (simple-circuit (c d) (f) (prim-chip (chip-or))))
+                (a b c d)
+                (e f))
+      (list
+        (simple-circuit 
+          (e f) 
+          (w) 
+           (comp-chip
+             (INE INF)
+             (OUTF)
+              (simple-circuit (e f) (g) (prim-chip (chip-and)))))
+      )
+      (a b c d)
+      (w))))
 
-;; Parsear la lista a un TAD de circuito
-(define circuito-ejemplo (parse-circuit lista-ejemplo))
 
-;; Unparsear el circuito de vuelta a una lista
-(define lista-resultado (unparse-circuit circuito-ejemplo))
+;; Parse: de sintaxis concreta a abstracta
+(define parse
+  (lambda (circuito)
+    (cond
+      [(eqv? (car circuito) 'simple-circuit) ;constructor para simple-circuit
+       (simple-circuit
+        (cadr circuito)  
+        (caddr circuito)
+        (parse (cadddr circuito)))]
+      
+      [(eqv? (car circuito) 'complex-circuit) ;constructor para complex-circuit
+       (complex-circuit
+        (parse (cadr circuito))
+        (caddr circuito)
+        (cadddr circuito)
+        (cddddr circuito))]
 
-(display circuito-ejemplo)
+      [(eqv? (car circuito) 'prim-chip) ;constructor para prim-chip
+       (prim-chip (parse (cadr circuito)))]
+
+      [(eqv? (car circuito) 'comp-chip) ;constructor para comp-chip
+       (comp-chip
+        (cadr circuito)
+        (caddr circuito)
+        (parse (cadddr circuito)))]
+
+      ;; Chip primitivos
+      [(eqv? (car circuito) 'chip-or) (chip-or)]
+      [(eqv? (car circuito) 'chip-and) (chip-and)]
+      [(eqv? (car circuito) 'chip-not) (chip-not)]
+      [(eqv? (car circuito) 'chip-xor) (chip-xor)]
+      [(eqv? (car circuito) 'chip-nor) (chip-nor)]
+      [(eqv? (car circuito) 'chip-nand) (chip-nand)]
+      [(eqv? (car circuito) 'chip-xnor) (chip-xnor)]
+    )))
+
+;; Unparse: de sintaxis abstracta a concreta
+(define unparse
+  (lambda (value)
+    (cases circuito value
+      [(simple-circuit in out chip)
+       (list 'simple-circuit in out (unparse-chip chip))]
+      [(complex-circuit circ lcirc in out)
+       (list 'complex-circuit (unparse circ) lcirc in out)])))
+
+(define unparse-chip
+  (lambda (chip-value)
+    (cases chip chip-value
+      [(prim-chip chip-prim)
+       (list 'prim-chip (unparse-chip-prim chip-prim))]
+      [(comp-chip in out circ)
+       (list 'comp-chip in out (unparse circ))])))
+
+(define unparse-chip-prim
+  (lambda (chip-prim-value)
+    (cases chip-prim chip-prim-value
+      [(chip-or) 'chip-or]
+      [(chip-and) 'chip-and]
+      [(chip-not) 'chip-not]
+      [(chip-xor) 'chip-xor]
+      [(chip-nor) 'chip-nor]
+      [(chip-nand) 'chip-nand]
+      [(chip-xnor) 'chip-xnor])))
+
+;; Ejemplos para probar
+
+;; Ejemplo simple de parseo de sintaxis concreta a abstracta
+(define circuito-abstracto (parse e))
+(display "Sintaxis abstracta del circuito simple:")
+(display circuito-abstracto)
 (newline)
 
-(display lista-resultado)
+;; Ejemplo de parseo inverso (unparse) de sintaxis abstracta a concreta
+(define circuito-concreto (unparse circuito-abstracto))
+(display "Sintaxis concreta recuperada del circuito simple:")
+(display circuito-concreto)
+(newline)
 
+;; Ejemplo complejo
+(define circuito-complejo-abstracto (parse x))
+(display "Sintaxis abstracta del circuito complejo:")
+(display circuito-complejo-abstracto)
+(newline)
 
-
+;; Parse inverso del circuito complejo
+(define circuito-complejo-concreto (unparse circuito-complejo-abstracto))
+(display "Sintaxis concreta recuperada del circuito complejo:")
+(display circuito-complejo-concreto)
+(newline)
