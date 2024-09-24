@@ -1,4 +1,4 @@
-#lang eopl
+ #lang eopl
 
 ;; Definición de tipos abstractos de datos (TAD)
 
@@ -88,6 +88,7 @@
 
       [else (eopl:error "Parse error: valor inesperado" circuito)])))
 
+
 ;; Unparse: de sintaxis abstracta a concreta
 (define unparse
   (lambda (value)
@@ -96,7 +97,7 @@
        (list 'simple-circuit in out (unparse-chip chip))]
       [(complex-circuit circ lcirc in out)
        (list 'complex-circuit (unparse circ) lcirc in out)]
-      
+ 
       [else (eopl:error "Unparse error: valor inesperado para circuito" value)])))  
 
 (define unparse-chip
@@ -106,7 +107,9 @@
        (list 'prim-chip (unparse-chip-prim chip-prim))]
       [(comp-chip in out circ)
        (list 'comp-chip in out (unparse circ))]
-      [else (eopl:error "Unparse error: valor inesperado para chip" chip-value)]))) 
+
+      [else (eopl:error "Unparse error: valor inesperado para chip" chip-value)])))  
+
 (define unparse-chip-prim
   (lambda (chip-prim-value)
     (cases chip-prim chip-prim-value
@@ -117,7 +120,7 @@
       [(chip-nor) 'chip-nor]
       [(chip-nand) 'chip-nand]
       [(chip-xnor) 'chip-xnor]
-      
+
       [else (eopl:error "Unparse error: valor inesperado para chip-prim" chip-prim-value)])))
 
 ;; Ejemplos
