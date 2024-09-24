@@ -1,18 +1,19 @@
 #lang eopl
 
-;; Definición de tipos abstractos de datos (TAD)
-
 (define-datatype circuito circuito?
+
   (simple-circuit (in list?)
                   (out list?)
-                  (chip chip?))
+                  (chip chip? ))
   (complex-circuit (circ circuito?)
                    (lcirc list?)
                    (in list?)
                    (out list?)))
 
 (define-datatype chip chip?
-  (prim-chip (chip-prim chip-prim?))
+  
+  (prim-chip(chip-prim chip-prim?))
+  
   (comp-chip (in list?)
              (out list?)
              (circ circuito?)))
@@ -27,67 +28,108 @@
   (chip-xnor))
 
 
-;; Sintaxis concreta de circuitos
-(define e '(simple-circuit (a b) (c) (prim-chip (chip-or))))  ;; Ejemplo simple
+;---------------------------------
 
-(define x '(comp-chip (INA INB INC IND)
-              (OUTA)
-             (complex-circuit
-               (complex-circuit
-                (simple-circuit (a b) (e) (prim-chip (chip-or)))
-                (list 
-                  (simple-circuit (c d) (f) (prim-chip (chip-or))))
-                (a b c d)
-                (e f))
-      (list
-        (simple-circuit 
-          (e f) 
-          (w) 
-           (comp-chip
-             (INE INF)
-             (OUTF)
-              (simple-circuit (e f) (g) (prim-chip (chip-and)))))))
-      (a b c d)
-      (w))))
+;EJEMPLOS DE CIRCUITOS CON SINTAXIS CONCRETA
+
+;1.
+(define a
+  '(simple-circuit 
+    (z w) 
+    (x) 
+    (comp-chip
+        (INA INB)
+        (OUTA)
+         (simple-circuit (a b) (c) (prim-chip (chip-and))))))
+
+;2.
+(define b
+  '(simple-circuit 
+    (s o f i)
+    (e f)
+    (comp-chip
+        (INA INB INC IND)
+        (OUTA OUTC)
+         (complex-circuit
+            (simple-circuit (a b) (e) (prim-chip (chip-or)))
+            (list
+            (simple-circuit (c d) (f) (prim-chip (chip-or)))
+            )
+            (a b c d)
+            (e f)))))
+;3
+(define c
+  '(comp-chip
+    (INA INB)
+    (OUTA)
+     (simple-circuit (a b) (c) (prim-chip (chip-or)))))
+
+;4.
+(define d
+  '(comp-chip
+   (INA)
+   (OUTA)
+    (complex-circuit
+     (simple-circuit (a) (b) (prim-chip (chip-not)))
+     (list
+      (simple-circuit (b) (c) (prim-chip (chip-not))))
+     (a)
+     (c))))
+;5
+(define e
+  '(complex-circuit
+   (simple-circuit (a b) (c) (prim-chip (chip-xnor)))
+   (list
+    (simple-circuit (c) (e) (comp-chip (INA) (OUTA) (simple-circuit (c) (d) (prim-chip (chip-not))))))
+   (a b)
+   (e)))
 
 
-;; Parse: de sintaxis concreta a abstracta
+;PARSE: de sintaxis concretas a sintaxis abstracta
+
 (define parse
   (lambda (circuito)
     (cond
-      [(eqv? (car circuito) 'simple-circuit) ;constructor para simple-circuit
-       (simple-circuit
-        (cadr circuito)  
-        (caddr circuito)
-        (parse (cadddr circuito)))]
+      [(eqv? (car circuito) 'simple-circuit) 
+        (simple-circuit
+         (cadr circuito)  
+         (caddr circuito)
+         (parse (cadddr circuito)))]
       
-      [(eqv? (car circuito) 'complex-circuit) ;constructor para complex-circuit
-       (complex-circuit
-        (parse (cadr circuito))
-        (caddr circuito)
-        (cadddr circuito)
-        (cddddr circuito))]
-
-      [(eqv? (car circuito) 'prim-chip) ;constructor para prim-chip
-       (prim-chip (parse (cadr circuito)))]
-
-      [(eqv? (car circuito) 'comp-chip) ;constructor para comp-chip
-       (comp-chip
-        (cadr circuito)
-        (caddr circuito)
-        (parse (cadddr circuito)))]
+      [(eqv? (car circuito) 'complex-circuit) 
+         (complex-circuit
+          (parse (cadr circuito))
+          (caddr circuito)
+          (cadddr circuito)
+          (cddddr circuito))]
       
-      ;; Chip primitivos
-      [(eqv? (car circuito) 'chip-or) (chip-or)]
-      [(eqv? (car circuito) 'chip-and) (chip-and)]
-      [(eqv? (car circuito) 'chip-not) (chip-not)]
-      [(eqv? (car circuito) 'chip-xor) (chip-xor)]
-      [(eqv? (car circuito) 'chip-nor) (chip-nor)]
-      [(eqv? (car circuito) 'chip-nand) (chip-nand)]
-      [(eqv? (car circuito) 'chip-xnor) (chip-xnor)]
-      [else (error "Parse error: valor inesperado" circuito)])))
+          [(eqv? (car circuito) 'prim-chip) ;contrcutores y predicados
+          (prim-chip
+           (parse (cadr circuito)))]
+         
+         [(eqv? (car circuito) 'comp-chip) ;contrcutores y predicados
+          (comp-chip
+           (cadr circuito)
+           (caddr circuito)
+           (parse (cadddr circuito)))]
+          
+         [(eqv? (car circuito) 'chip-or) (chip-or)]
+         [(eqv? (car circuito) 'chip-and) (chip-and)]
+         [(eqv? (car circuito) 'chip-not) (chip-not)]
+         [(eqv? (car circuito) 'chip-xor) (chip-xor)]
+         [(eqv? (car circuito) 'chip-nor) (chip-nor)]
+         [(eqv? (car circuito) 'chip-nand) (chip-nand)]
+         [(eqv? (car circuito) 'chip-xnor) (chip-xnor)]
+        
+        
+  )
+ )
+)
+(define r (simple-circuit '(a b) '(c) (prim-chip(chip-and))))
 
-;; Unparse: de sintaxis abstracta a concreta
+
+
+;; UNPARSE: de sintaxis abstracta a concreta
 (define unparse
   (lambda (value)
     (cases circuito value
@@ -121,15 +163,30 @@
       ;; Cláusula else debe estar siempre al final
       [else (error "Unparse error: valor inesperado para chip-prim" chip-prim-value)])))  ;; else al final
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#|
+;; Ejemplos
 ;; Ejemplo de uso
 ;; Evaluar el parseo y el desparseo
 (let ([parsed-circuit (parse e)])
   (display parsed-circuit)
   (newline)
   (display (unparse parsed-circuit)))
-
-
-;; Ejemplos
 
 ;; Ejemplo simple de parseo de sintaxis concreta a abstracta
 (define circuito-abstracto (parse e))
@@ -154,3 +211,4 @@
 (display "Sintaxis concreta recuperada del circuito complejo:")
 (display circuito-complejo-concreto)
 (newline)
+|#
