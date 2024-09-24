@@ -3,22 +3,22 @@
 ;REPRESENTACION DATATYPE
 
 (define-datatype circuito circuito?
-  (simple-circuit (in list?)
-                  (out list?)
-                  (chip chip? ))
+  (simple-circuit (in list?) ;lista de entradas
+                  (out list?) ;lista de salidas
+                  (chip chip? )) ; chip que se va a utilizar
   
   (complex-circuit (circ circuito?)
-                   (lcirc list?)
-                   (in list?)
-                   (out list?)))
+                   (lcirc list?) ; el circuito puede tener una lista de circuitos
+                   (in list?) ; lista de entradas
+                   (out list?))) ; lista de salidas de circuito compuesto
 
 (define-datatype chip chip?
   
-  (prim-chip(chip-prim chip-prim?))
+  (prim-chip(chip-prim chip-prim?)) ;represneta un chip primitivo que contiene un chip primitivo
   
-  (comp-chip(in list?)
+  (comp-chip(in list?) ;un chip compuesto que contiene una lista de entradas y salidas
              (out list?)
-             (circ circuito?)))
+             (circ circuito?))) ; circuito que se va a ejecutar dentro del chip
 
 (define-datatype chip-prim chip-prim?
   (chip-or)
