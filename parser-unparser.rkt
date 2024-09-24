@@ -46,8 +46,7 @@
            (comp-chip
              (INE INF)
              (OUTF)
-              (simple-circuit (e f) (g) (prim-chip (chip-and)))))
-      )
+              (simple-circuit (e f) (g) (prim-chip (chip-and)))))))
       (a b c d)
       (w))))
 
@@ -77,7 +76,7 @@
         (cadr circuito)
         (caddr circuito)
         (parse (cadddr circuito)))]
-
+      
       ;; Chip primitivos
       [(eqv? (car circuito) 'chip-or) (chip-or)]
       [(eqv? (car circuito) 'chip-and) (chip-and)]
@@ -86,7 +85,7 @@
       [(eqv? (car circuito) 'chip-nor) (chip-nor)]
       [(eqv? (car circuito) 'chip-nand) (chip-nand)]
       [(eqv? (car circuito) 'chip-xnor) (chip-xnor)]
-    )))
+      [else (error "Parse error: valor inesperado" circuito)])))
 
 ;; Unparse: de sintaxis abstracta a concreta
 (define unparse
@@ -96,7 +95,8 @@
        (list 'simple-circuit in out (unparse-chip chip))]
       [(complex-circuit circ lcirc in out)
        (list 'complex-circuit (unparse circ) lcirc in out)]
-      [else (error "Unparse error: valor inesperado para circuito" value)])))  
+      ;; Cláusula else debe estar siempre al final
+      [else (error "Unparse error: valor inesperado para circuito" value)])))  ;; else al final
 
 (define unparse-chip
   (lambda (chip-value)
@@ -105,7 +105,9 @@
        (list 'prim-chip (unparse-chip-prim chip-prim))]
       [(comp-chip in out circ)
        (list 'comp-chip in out (unparse circ))]
-      [else (error "Unparse error: valor inesperado para chip" chip-value)])))  
+      ;; Cláusula else debe estar siempre al final
+      [else (error "Unparse error: valor inesperado para chip" chip-value)])))  ;; else al final
+
 (define unparse-chip-prim
   (lambda (chip-prim-value)
     (cases chip-prim chip-prim-value
@@ -116,7 +118,16 @@
       [(chip-nor) 'chip-nor]
       [(chip-nand) 'chip-nand]
       [(chip-xnor) 'chip-xnor]
-      [else (error "Unparse error: valor inesperado para chip-prim" chip-prim-value)]))) 
+      ;; Cláusula else debe estar siempre al final
+      [else (error "Unparse error: valor inesperado para chip-prim" chip-prim-value)])))  ;; else al final
+
+;; Ejemplo de uso
+;; Evaluar el parseo y el desparseo
+(let ([parsed-circuit (parse e)])
+  (display parsed-circuit)
+  (newline)
+  (display (unparse parsed-circuit)))
+
 
 ;; Ejemplos
 
