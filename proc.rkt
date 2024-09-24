@@ -8,37 +8,42 @@
   (lambda (in out chip)
     (lambda (signal)
     (cond
-      [(= signal 0) 'simple-circuit]
-      [(= signal 1) in]
-      [(= signal 2) out]
-      [(= signal 3) chip]))))
+      [(= signal 0) 'simple-circuit] ;devuelve el tipo de circuito
+      [(= signal 1) in] ; devuelve la entraada
+      [(= signal 2) out] ; devuelve la salida
+      [(= signal 3) chip]))) ; devuelve el chip
+)
 
 (define complex-circuit
   (lambda (circ lcircs in out)
     (lambda (signal)
     (cond
-      [(= signal 0) 'complex-circuit]
-      [(= signal 1) circ]
-      [(= signal 2) lcircs]
-      [(= signal 3) in]
-      [(= signal 4) out]))))
+      [(= signal 0) 'complex-circuit] ;devuelve el tipo de circuito
+      [(= signal 1) circ] ;devuelve el circuito
+      [(= signal 2) lcircs] ;devuelve la lista de circuitos
+      [(= signal 3) in] ;devuelve la entrada
+      [(= signal 4) out]))) ;devuelve la salida
+    )
     
 
 (define prim-chip
-  (lambda (chip-prim)
+  (lambda (chip-prim) 
     (lambda (signal)
     (cond
-      [(= signal 0) 'prim-chip]
-      [(= signal 1) chip-prim]))))
+      [(= signal 0) 'prim-chip] ;devuelve el tipo de chip
+      [(= signal 1) chip-prim]))) ;devuelve el chip primitivo
+      )
 
 (define comp-chip
   (lambda (in out circ)
     (lambda (signal)
     (cond
-      [(= signal 0) 'comp-chip]
-      [(= signal 1) in]
-      [(= signal 2) out]
-      [(= signal 3) circ]))))
+      [(= signal 0) 'comp-chip] ;devuelve el tipo de chip 
+      [(= signal 1) in] ;devuelve la entrada
+      [(= signal 2) out] ;devuelve la salida
+      [(= signal 3) circ]))) ;devuelve el circuito
+        )
+     
 
 (define chip-or
   (lambda (signal)
@@ -119,7 +124,7 @@
 
 (define simple-circuit->in
   (lambda(n)
-    (n 1)))
+    (n 1))) ; devuelve la entrada del circuito simple
 (define simple-circuit->out
   (lambda(n)
     (n 2)))
@@ -130,7 +135,7 @@
 
 (define complex-circuit->circ
   (lambda(n)
-     (n 1)))
+     (n 1))) ;devuelve el circuito del circuito complejo
 (define complex-circuit->lcirc
   (lambda(n)
      (n 2)))
