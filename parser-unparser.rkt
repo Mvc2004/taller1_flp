@@ -1,5 +1,7 @@
 #lang eopl
 
+;; Definición de tipos abstractos de datos (TAD)
+
 (define-datatype circuito circuito?
 
   (simple-circuit (in list?)
@@ -96,40 +98,33 @@
          (caddr circuito)
          (parse (cadddr circuito)))]
       
-      [(eqv? (car circuito) 'complex-circuit) 
-         (complex-circuit
-          (parse (cadr circuito))
-          (caddr circuito)
-          (cadddr circuito)
-          (cddddr circuito))]
+      [(eqv? (car circuito) 'complex-circuit) ;constructor para complex-circuit
+       (complex-circuit
+        (parse (cadr circuito))
+        (caddr circuito)
+        (cadddr circuito)
+        (cddddr circuito))]
+
+      [(eqv? (car circuito) 'prim-chip) ;constructor para prim-chip
+       (prim-chip (parse (cadr circuito)))]
+
+      [(eqv? (car circuito) 'comp-chip) ;constructor para comp-chip
+       (comp-chip
+        (cadr circuito)
+        (caddr circuito)
+        (parse (cadddr circuito)))]
       
-          [(eqv? (car circuito) 'prim-chip) ;contrcutores y predicados
-          (prim-chip
-           (parse (cadr circuito)))]
-         
-         [(eqv? (car circuito) 'comp-chip) ;contrcutores y predicados
-          (comp-chip
-           (cadr circuito)
-           (caddr circuito)
-           (parse (cadddr circuito)))]
-          
-         [(eqv? (car circuito) 'chip-or) (chip-or)]
-         [(eqv? (car circuito) 'chip-and) (chip-and)]
-         [(eqv? (car circuito) 'chip-not) (chip-not)]
-         [(eqv? (car circuito) 'chip-xor) (chip-xor)]
-         [(eqv? (car circuito) 'chip-nor) (chip-nor)]
-         [(eqv? (car circuito) 'chip-nand) (chip-nand)]
-         [(eqv? (car circuito) 'chip-xnor) (chip-xnor)]
-        
-        
-  )
- )
-)
-(define r (simple-circuit '(a b) '(c) (prim-chip(chip-and))))
+      ;; Chip primitivos
+      [(eqv? (car circuito) 'chip-or) (chip-or)]
+      [(eqv? (car circuito) 'chip-and) (chip-and)]
+      [(eqv? (car circuito) 'chip-not) (chip-not)]
+      [(eqv? (car circuito) 'chip-xor) (chip-xor)]
+      [(eqv? (car circuito) 'chip-nor) (chip-nor)]
+      [(eqv? (car circuito) 'chip-nand) (chip-nand)]
+      [(eqv? (car circuito) 'chip-xnor) (chip-xnor)]
+      [else (error "Parse error: valor inesperado" circuito)])))
 
-
-
-;; UNPARSE: de sintaxis abstracta a concreta
+;; Unparse: de sintaxis abstracta a concreta
 (define unparse
   (lambda (value)
     (cases circuito value
@@ -137,8 +132,8 @@
        (list 'simple-circuit in out (unparse-chip chip))]
       [(complex-circuit circ lcirc in out)
        (list 'complex-circuit (unparse circ) lcirc in out)]
-      ;; Cláusula else debe estar siempre al final
-      [else (error "Unparse error: valor inesperado para circuito" value)])))  ;; else al final
+ 
+      [else (eopl:error "Unparse error: valor inesperado para circuito" value)])))  
 
 (define unparse-chip
   (lambda (chip-value)
@@ -147,8 +142,8 @@
        (list 'prim-chip (unparse-chip-prim chip-prim))]
       [(comp-chip in out circ)
        (list 'comp-chip in out (unparse circ))]
-      ;; Cláusula else debe estar siempre al final
-      [else (error "Unparse error: valor inesperado para chip" chip-value)])))  ;; else al final
+
+      [else (eopl:error "Unparse error: valor inesperado para chip" chip-value)])))  
 
 (define unparse-chip-prim
   (lambda (chip-prim-value)
@@ -160,6 +155,11 @@
       [(chip-nor) 'chip-nor]
       [(chip-nand) 'chip-nand]
       [(chip-xnor) 'chip-xnor]
+
+      [else (eopl:error "Unparse error: valor inesperado para chip-prim" chip-prim-value)])))
+
+;; Ejemplos
+
       ;; Cláusula else debe estar siempre al final
       [else (error "Unparse error: valor inesperado para chip-prim" chip-prim-value)])))  ;; else al final
 
@@ -210,5 +210,6 @@
 (define circuito-complejo-concreto (unparse circuito-complejo-abstracto))
 (display "Sintaxis concreta recuperada del circuito complejo:")
 (display circuito-complejo-concreto)
-(newline)
+(newline) 
 |#
+
