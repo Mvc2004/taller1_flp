@@ -96,7 +96,7 @@
        (list 'simple-circuit in out (unparse-chip chip))]
       [(complex-circuit circ lcirc in out)
        (list 'complex-circuit (unparse circ) lcirc in out)]
-      [else (error "Unparse error: valor inesperado para circuito" value)])))  ;; Añadimos una cláusula else
+      [else (error "Unparse error: valor inesperado para circuito" value)])))  
 
 (define unparse-chip
   (lambda (chip-value)
@@ -105,8 +105,7 @@
        (list 'prim-chip (unparse-chip-prim chip-prim))]
       [(comp-chip in out circ)
        (list 'comp-chip in out (unparse circ))]
-      [else (error "Unparse error: valor inesperado para chip" chip-value)])))  ;; Añadimos una cláusula else
-
+      [else (error "Unparse error: valor inesperado para chip" chip-value)])))  
 (define unparse-chip-prim
   (lambda (chip-prim-value)
     (cases chip-prim chip-prim-value
@@ -117,7 +116,7 @@
       [(chip-nor) 'chip-nor]
       [(chip-nand) 'chip-nand]
       [(chip-xnor) 'chip-xnor]
-      [else (error "Unparse error: valor inesperado para chip-prim" chip-prim-value)])))  ;; Añadimos una cláusula else
+      [else (error "Unparse error: valor inesperado para chip-prim" chip-prim-value)]))) 
 
 ;; Ejemplos
 
